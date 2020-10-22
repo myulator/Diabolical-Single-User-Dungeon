@@ -2,3 +2,5 @@
 # COMP-1510-Midterm-Hackathon
 
 Add your full names and student numbers here.
+Michael Yu A00962260
+Aaron Tansley A00938978
