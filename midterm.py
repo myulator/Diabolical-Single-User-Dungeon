@@ -11,15 +11,13 @@ import random
 def game():
     board = make_board()
     character = make_character()
-    player_hp = 10
-    player_coords = (board, board) # (horizontal from left to right, vertical from top to bottom)
     achieved_goal = 0 # the number of souls freed; free 5 souls to win the game
     while achieved_goal < 5 and player_hp > 0:
-        print(f'You are currently at', player_coords)
+        print(f'You are currently at', character[1],',', character[0])
         direction = get_user_direction()
-        valid_move = validate_move(direction)
+        valid_move = validate_move(direction, character, board)
         if valid_move:
-            move_character(player_coords)
+            move_character(direction, character,)
             encounter()
         else:
             print('You cannot move that way!')
@@ -58,7 +56,7 @@ def make_character():
     return [x, y, health, name]
 
 
-def get_user_direction(character_info, board):
+def get_user_direction():
     """
     Calculate player movement based on user input.
     
@@ -66,46 +64,54 @@ def get_user_direction(character_info, board):
     :board: A 2d list representing all positions on the board
     :return:
     """
-    choice = input('Where would you like to go: (North, South, East or West)').lower().strip()
-    valid_move = validate_move(choice, player_info, board)
-    if valid_move is True:
-        if choice is 'n' or 'north':
-            character[1] -= 1
-        if choice is 's' or 'south':
-            character[1] += 1
-        if choice is 'e' or 'east':
-            character[0] += 1
-        if choice is 'w' or 'west':
-            character[0] -= 1
+    print('Movement:\n1 or N = North\n2 or S = South\n3 or E = East\n4 or W = West')
+    choice = input('In which direction will you move?: ').lower().strip()
+    return choice
+    
+
+def move_character(choice, character_info, board):
+    """
+    Change the x or y position of the player depending on user input
+
+
+    """
+    if choice == 1 or 'n' or 'north':
+        character_info[1] -= 1
+    if choice == 2 or 's' or 'south':
+        character_info[1] += 1
+    if choice == 3 or 'e' or 'east':
+        character_info[0] += 1
+    if choice == 4 or 'w' or 'west':
+        character_info[0] -= 1
     return character_info
 
 
 def validate_move(choice, player_info, board):
   """
-  Validate if player inputted movement is possible
+  Validate if player inputted movement is within boundaries of the board.
   
   :param choice: a string representing player's desired direction
   :param player_info: a list that contains the player's x and y position 
   :board: A 2d list representing all positions on the board
+  :precondition: choice must be a valid movement input
+  :postcondition: determines if player movement is possible
   :return: a boolean value
   """
-  # Something to do with checking if player_coords are < 0 or > 4
-  if choice is 'n' or 'north':
-    if board[character[1]] - 1 == -1:
-      valid = False
-    else:
+  # Check if player x or y position after movement is a value contained in board.
+  valid = False
+  if choice == 1 or 'n' or 'north':
+    if (player_info[1] - 1) in board:
       valid = True
-     
-  if choice is 's' or 'south':
-    if board[character[1]] + 1 == 5:
-      valid = False
-    else:
+  if choice == 2 or 's' or 'south':
+    if (player_info[1] + 1) in board:
       valid = True
-  if choice is 'e' or 'east':
-            character[0] += 1
-  if choice is 'w' or 'west':
-            character[0] -= 1
-  
+  if choice == 3 or 'e' or 'east':
+    if (player_info[0] + 1) in board:
+      valid = True
+  if choice == 4 or 'w' or 'west':
+    if (player_info[0] - 1) in board:
+      valid = True
+  return valid
 
 def roll_d4():
   """
@@ -143,20 +149,33 @@ def roll_d20():
   return random.randint(1,20)
 
 
-def player_combat_simulator():
-  player_hp = 10 # For testing
+def valid_player_input():
+  player_action = input("What would you like to do? \nATTACK | FLEE\n").lower().strip()
+  
+  while player_action not in ["attack", "flee"]:
+    player_action = input("Please choose either ATTACK or FLEE\n").lower().strip()
+    
+  return player_action
+
+
+def player_combat_turn():
+  enemy_hp = 5 # for testing
   player_attack_power = roll_d6()
-  enemy_attack_power = roll_d6()
-
+  print("You outspeed the X!")
   print("You strike the enemy for %d damage!" % player_attack_power)
-  print("The enemy slashed you for %d damage!" % enemy_attack_power)
+  enemy_hp -= player_attack_power
 
+def enemy_combat_turn():
+  player_hp = 5 # for testing
+  enemy_attack_power = roll_d6()
+  print("X outspeeds player.")
+  print("The enemy slashed you for %d damage!" % enemy_attack_power)
   player_hp -= enemy_attack_power
 
-  return player_attack_power
 
 def flee_success_calculator():
   """
+  Returns string.
 
   Calculates the flee success probability
 
@@ -208,7 +227,7 @@ def initiative_calculator():
 
 def combat_round():
   """
-  Returns 
+  Returns ...
 
   Drives the combat system.
   
@@ -225,26 +244,28 @@ def combat_round():
   player_hp = 10 # For testing
   flee = False
 
-
-  player_action = input("What would you like to do? \nATTACK | FLEE\n").lower().strip()
-
-
+  player_action = valid_player_input()
+  
   while player_hp > 0 and enemy_hp > 0 and flee == False:
+
+    
 
     if player_action == "attack":
       
       if initiative_calculator():
-        player_attack_power = roll_d6()
-        print("You strike the X for %d" % player_attack_power)
-        enemy_hp -= player_attack_power
+        player_combat_turn()
 
       else:
-        enemy_attack_power = roll_d6()
-        print("The X moves like the wind and strikes you for %d damage!" % enemy_attack_power)
-        player_hp -= enemy_attack_power
-      
+        enemy_combat_turn()
+        
+    if enemy_hp < 1:
+      achieved_goal += 1
+      print("You win!")
+        
+
     elif player_action == "flee":
       flee_success_calculator()
+      
       flee = True
   
 
