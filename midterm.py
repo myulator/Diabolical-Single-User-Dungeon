@@ -11,20 +11,28 @@ import random
 def game():
     board = make_board()
     character = make_character()
-    achieved_goal = 0 # the number of souls freed; free 5 souls to win the game
-    while achieved_goal < 5 and character[2] > 0:
-        print(f'You are currently at', character[1],',', character[0])
+    end_game = 0
+
+    while character[2] > 0 and end_game != 'exit' and character[4] != 5:
+        print(f'\nYou are currently at', character[1],',', character[0])
         direction = get_user_direction()
         valid_move = validate_move(direction, character, board)
-        if valid_move:
-            move_character(direction, character,)
-            encounter(character, achieved_goal)
-        else:
+        
+        if valid_move == True:
+            move_character(direction, character)
+            encounter(character)
+
+        if valid_move == "exit":
+            print('Game ended by user. Safe travels.')
+            end_game = 'exit'
+            
+        elif valid_move == False:
             print('You cannot move that way!')
-    if achieved_goal == 5:
+
+    if character[4] == 5:
         print('You have freed the souls of your clansmen! Congratulations!')
     elif character[2] <= 0:
-        print('Despite your best efforts, you were slain in combat. Try again!')
+        print('Despite your best efforts, you were slain in combat. Game over!')
 
 
 def make_board():
@@ -53,10 +61,11 @@ def make_character():
     health = 10
     x = 2
     y = 2
-    print(f'Welcome, brave', name)
-    print('An evil presence has emerged in the small town of Wristrum!')
+    achieved_goal = 0 # the number of enemies killed; kill 5 to win the game
+    print(f'\nWelcome, brave', name)
+    print('\nAn evil presence has emerged in the small town of Wristrum!')
     print('Quickly now, enter the catacombs and free the tormented souls of your clansmen.')
-    return [x, y, health, name]
+    return [x, y, health, name, achieved_goal]
 
 
 def get_user_direction():
@@ -64,11 +73,10 @@ def get_user_direction():
     Calculate player movement based on user input.
     
     :param character_info: A list that contains the player's x and y position
-    :board: A 2d list representing all positions on the board
     :return:
     """
-    print('Movement:\n1 or N = North\n2 or S = South\n3 or E = East\n4 or W = West')
-    choice = input('In which direction will you move?: ').lower().strip()
+    print('\nMovement:\n1 or N = North\n2 or S = South\n3 or E = East\n4 or W = West')
+    choice = input('\nIn which direction will you move?: ').lower().strip()
     return choice
     
     
@@ -81,16 +89,28 @@ def move_character(choice, character_info):
     :precondition: choice must be a valid movement input
     :postcondition: adjusts either the x or y position in character_info according to user choice
     :return: a list that contains the player's modified x and y position
+
+    >>> print(move_character("3", [2, 2, 10, 'name']))
+    [3, 2, 10, 'name']
+    >>> print(move_character("s", [3, 1, 5, 'name']))
+    [3, 2, 5, 'name']
+    >>> print(move_character("west", [4, 0, 7, 'name']))
+    [3, 0, 7, 'name']
+    >>> print(move_character("n", [3, 3, 9, 'name']))
+    [3, 2, 9, 'name']
     """
-    if choice == 1 or 'n' or 'north':
+    if choice == '1' or choice == 'n' or choice == 'north':
         character_info[1] -= 1
-    if choice == 2 or 's' or 'south':
+        return character_info
+    if choice == '2' or choice == 's' or choice == 'south':
         character_info[1] += 1
-    if choice == 3 or 'e' or 'east':
+        return character_info
+    if choice == '3' or choice == 'e' or choice == 'east':
         character_info[0] += 1
-    if choice == 4 or 'w' or 'west':
+        return character_info
+    if choice == '4' or choice == 'w' or choice == 'west':
         character_info[0] -= 1
-    return character_info
+        return character_info
 
 
 def validate_move(choice, player_info, board):
@@ -99,26 +119,46 @@ def validate_move(choice, player_info, board):
   
   :param choice: a string or integer that represents player's desired direction
   :param player_info: a list that contains the player's x and y position 
-  :board: A 2d list representing all positions on the board
+  :parapm board: A 2d list representing all positions on the 
   :precondition: choice must be a valid movement input
   :postcondition: determines if player movement is possible
-  :return: a boolean value
+  :return: a boolean value or a string to quit the game
+  
+  >>> print(validate_move('1', [2, 2, 10, 'name']))
+  True
+  >>> print(validate_move('east', [4, 3, 3, 'name']))
+  False
+  >>> print(validate_move('1', [0, 2, 8, 'name']))
+  False
+  >>> print(validate_move('w', [0, 1, 8, 'name']))
+  False
+  >>> print(validate_move('2', [3, 4, 8, 'name']))
+  False
   """
   # Check if player x or y position after movement is a value contained in board.
   valid = False
-  if choice == 1 or 'n' or 'north':
+  if choice == '1' or choice == 'n' or choice == 'north':
     if (player_info[1] - 1) in board[0]:
       valid = True
-  if choice == 2 or 's' or 'south':
+      return valid
+  if choice == '2' or choice == 's' or choice == 'south':
     if (player_info[1] + 1) in board[0]:
       valid = True
-  if choice == 3 or 'e' or 'east':
+      return valid
+  if choice == '3' or choice == 'e' or choice == 'east':
     if (player_info[0] + 1) in board[0]:
       valid = True
-  if choice == 4 or 'w' or 'west':
+      return valid
+  if choice == '4' or choice == 'w' or choice == 'west':
     if (player_info[0] - 1) in board[0]:
       valid = True
-  return valid
+      return valid
+  if choice == 'quit':
+      valid = 'exit'
+      return valid
+  else:  
+      return valid
+
 
 def roll_d4():
   """
@@ -168,28 +208,27 @@ def valid_player_input():
   """
   player_action = input("What would you like to do? \nATTACK | FLEE\n").lower().strip()
   
-  while player_action not in ["attack", "flee"]:
+  while player_action not in ["attack", "flee"]:    
     player_action = input("Please choose either ATTACK or FLEE\n").lower().strip()
-    
+    return player_action
+
   return player_action
 
 
 def player_combat_turn(enemy_hp):
   """
-  Print a series of strings describing combat in the event that you attack first
-
-  Simultes combat if player won the initiative roll. Determines player damage and calculates remaining enemy health
-  points.
+  Print a series of strings describing combat in the event that you attack first.
   
+  Simulates combat if player won the initiative roll. Determines player damage and calculates remaining enemy health points.
   
-  :param: N/A, no paramters accepted.
-  :precondition: N/A, this function does not accept parameters.
-  :postcondition: Prints two strings and calculates remaining enemy health.
-  :return: Prints two strings. # Returns?
+  :param enemy_hp: integer represents current enemy health
+  :precondition: enemy_hp must be > 0
+  :postcondition: prints combat information and calculates remaining enemy health.
+  :return: the modified enemy health value as an integer
   """
-  enemy_hp = 5 # for testing
   player_attack_power = roll_d6()
   print("You deal %d damage!" % player_attack_power)
+  print("The enemy shrieks menacingly. \n")
   enemy_hp -= player_attack_power
   return enemy_hp
 
@@ -198,19 +237,18 @@ def enemy_combat_turn(character):
   """
   Print a series of strings describing combat in the event that the enemy attacks first
 
-  Simultes combat if the enemy won the initiative roll. Determines enemy damage and calculates remaining player health points.
+  Simulates combat if the enemy won the initiative roll. Determines enemy damage and calculates remaining player health points.
   
-  
-  :param: N/A, no paramters accepted.
-  :precondition: N/A, this function does not accept parameters.
+  :param character: Accepts a list that contains player health and kill count.
+  :precondition: A list containing 3 integers and a string, in that order.
   :postcondition: Prints two strings and calculates remaining player health points.
-  :return: Prints two strings. # Returns?
+  :return: Prints two strings.
   """
-  player_hp = 5 # for testing
   enemy_attack_power = roll_d6()
-  print("The enemy slashed you for %d damage!" % enemy_attack_power)
+  print("The enemy slashed you for %d damage!\n" % enemy_attack_power)
   character[2] -= enemy_attack_power
   return character
+
 
 def flee_success_calculator(character):
   """
@@ -219,123 +257,120 @@ def flee_success_calculator(character):
   Calculates the flee success probability, if player fails the roll then enemy damage roll is done, and calcualtes
   remaining player hitpoints.
 
-  :param: N/A, this function does not accept parameters.
-  :precondition: N/A, this function does not accept parameters.
+  :param character: Accepts a list that contains player health and kill count.
+  :precondition: A list containing 3 integers and a string, in that order.
   :postcondition: Determines if player successfully flees, if not, calculates player damage taken.
   :return: Prints strings.
   """
   flee_roll = roll_d10()
 
   if flee_roll > 1:
-    print("You successfully run away!")
+    print("You successfully escape the encounter!")
+
   else:
     flee_damage = roll_d4()
     character[2] -= flee_damage
-    print("The X slices your back as you run away, you take %d damage!" % flee_damage)
+    print("The enemy slices your back as you run away, you take %d damage!" % flee_damage)
+    
 
-
-def encounter(character, achieved_goal):
+def encounter(character):
   """
   Calls helper function combat_round(), or returns false.
 
   Determines if the player encounters an enemy. If player encounters an enemy then combat_round() function is called.
 
-  :param: 
-  :precondition: 
-  :postcondition: Calls combat_round() function if conditional statement are True. ##
+  :param character: Accepts a list that contains player health and kill count.
+  :precondition: A list containing 3 integers, a string, and 1 integer, in that order.
+  :postcondition: Calls combat_round() function if conditional statement are True. 
   :return: Prints a string, or else calls a helper function.
   """
-  # encounter_value = roll_d4()
-  encounter_value = 1 # For testing
+  encounter_value = roll_d4()
 
+  # Conditional statement if the player does have an encounter
   if encounter_value == 1:
-    print("You see X sprinting towards you...and you prepare to fight!")
-    combat_round(character, achieved_goal)
-  else:
-    return False
+    print("\nAn Undead Clansman has found you.\n")
+    return combat_round(character)
+    
+  elif encounter_value != 1:
+    
+    if character[2] + 2 > 10:
+      character[2] = 10
+      print(f'Your hp is full: ', character[2])
+      return character
+      
+    else:
+      character[2] += 2
+      print(f'You recover 2 hp. Your hp is now: ', character[2])
+      return character
 
 
 def initiative_calculator():
   """
-  Returns strin or boolean.
+  Return string or boolean.
 
   Determines if the player or the enemy has initiative. Uses conditional statements to determine who goes first.
 
-  :param: N/A, this function does not accept parameters.
-  :precondition: N/A, this function does not accept parameters.
   :postcondition: Prints strings and returns booleans based on conditional statements, or else the function
                   calls itself.
   :return: Prints strings and returns booleans.
   """
-  input("Press enter to roll for initiative. \n")
+  input("\nPress enter to roll for initiative. \n")
 
   player_speed = roll_d20()
   enemy_speed = roll_d20()
 
+  # Checks for who rolled higher for initiative
   if player_speed > enemy_speed:
-    print("Player first.")
+    print("You strike first!")
     return True
     
   elif player_speed < enemy_speed:
-    print("Enemy first.")
+    print("The enemy strikes first.")
     return False
 
   elif player_speed == enemy_speed:
-    print("Both same time.")
+    print("Both you and your enemy whiff attacks!")
     initiative_calculator()
 
 
-def combat_round(character, achieved_goal):
+def combat_round(character):
   """
-  Returns ...
-
   Drives the combat system. Enemy healthpoints are initialized at 5.
   
-  # Would be come after the encounter while function(?)
-
-  # Needs function to determine initiative
- 
-  # Needs function to determine damage rolls
-
-  # Needs function to print flavor text at beginning of combat, during, and after
-
+  :param character: Accepts a list that contains player health and kill count.
+  :precondition: A list containing 3 integers, a string, and 1 integer, in that order.
+  :postcondition: Calculates player health and kill count after combat or flee scenario
+  :return: Boolean, integer, and/or string(s).
   """
-  enemy_hp = 5
-  # player_hp = 10 # For testing
-  # flee = False
+  enemy_hp = 5 # Enemy healthpoints set at 5.
+  flee = False # Flee set to false
 
+  # Checks for valid user input and and cleans input
   player_action = valid_player_input()
   
-  while character[2] > 0 and enemy_hp > 0:
+  # Main loop that drives the combat system
+  while character[2] > 0 and enemy_hp > 0 and flee == False:
 
     if player_action == "attack":
       
       if initiative_calculator():
-        player_combat_turn(enemy_hp)
+        enemy_hp = player_combat_turn(enemy_hp)
         enemy_combat_turn(character)
-
+        
       else:
         enemy_combat_turn(character)
-        player_combat_turn(enemy_hp)
-        
+        enemy_hp = player_combat_turn(enemy_hp)
+    
     if enemy_hp < 1:
-      achieved_goal += 1
-      print("You win!")
-        
-
+      print("You have defeated the enemy!")
+      
     elif player_action == "flee":
       flee_success_calculator(character)
-      
       flee = True
+
+  character[4] += 1
+  return character
   
-
-
-  # elif player_hp < 1:
-  #   break # Breaks main loop
-  
-
-
-
 
 def main():
     """Drives the program."""
