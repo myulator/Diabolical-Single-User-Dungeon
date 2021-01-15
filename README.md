@@ -6,7 +6,7 @@ Date: October 2020
 This single-user dungeon was developed during the 6-hour midterm hackathon for COMP 1510 at BCIT, supervised by Chris Thompson.
 
 # Game design:
-In the early days of internet and computing, gamers used to dial into things called multi-user dungeons (MUDs). MUDs were text-based real-timerole-playing adventure games that let users read descriptions about rooms, objects, other players, non-player characters, etc., and perform actions and interact with the virtual world. Currently, we have not learned how to use python for networking yet, so this project is a single-user dungeon (SUD).
+In the early days of internet and computing, gamers used to dial into things called multi-user dungeons (MUDs). MUDs were text-based real-timerole-playing adventure games that let users read descriptions about rooms, objects, other players, non-player characters, etc., and perform actions and interact with the virtual world. We have not learned how to use python for networking yet, so this project is a single-user dungeon (SUD) readily playable in CLI.
 
 The game is played on a square 5 x 5 board.  
 Player location is stored using (x, y) coordinates.  
