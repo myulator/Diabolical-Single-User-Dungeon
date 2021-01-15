@@ -15,14 +15,14 @@ i.e.: The square in the top-left of the board has the coordinates (0, 0)
 
 # Gameplay - General:
 The player must find and defeat 3 enemies without dying to beat the game.  
-Player begins the game with 10 health. All enemies have 5 health.
-Damage inflicted during combat is random (between 1 and 6 damage).
+Player begins the game with 10 health. All enemies have 5 health.  
+Damage inflicted during combat is random (between 1 and 6 damage).  
 
 # Gameplay - Movement:
 Player always moves 1 square north, south, east, or west.  
 Player cannot move outside the bounds of the 5 x 5 dungeon.  
-Every time the player moves, there is a 25% chance that a monster encounter will occur.
-Every time the player moves and does not enounter a monster, they heal for 2 health.
+Every time the player moves, there is a 25% chance that a monster encounter will occur.  
+Every time the player moves and does not enounter a monster, they heal for 2 health.  
 
 # List of functions:  
 game   
