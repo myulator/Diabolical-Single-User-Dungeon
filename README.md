@@ -1,5 +1,5 @@
 # Diabolical: Starter Edition | BCIT CST COMP1510 Midterm Hackathon
-Developers: Michael Yu & Aaron Tansley
+Developers: Michael Yu & Aaron Tansley   
 Date: October 2020
 
 This single-user dungeon was developed during the 6-hour midterm hackathon for COMP 1510 at BCIT, supervised by Chris Thompson.
