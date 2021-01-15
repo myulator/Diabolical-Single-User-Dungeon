@@ -1,12 +1,12 @@
 """
-This file must contain your main function. This is the file
-the repl.it interpreter will execute using the command python game.py.
+COMP-1510-Midterm-Hackathon
+Single User Dungeon (SUD)
 
-Michael and Aaron
+Michael Yu and Aaron Tansley
 """
 
 import random
-
+import time
 
 def game():
     board = make_board()
@@ -14,6 +14,7 @@ def game():
     end_game = 0
 
     while character[2] > 0 and end_game != 'exit' and character[4] != 5:
+        time.sleep(1)
         print(f'\nYou are currently at', character[1],',', character[0])
         direction = get_user_direction()
         valid_move = validate_move(direction, character, board)
@@ -57,13 +58,16 @@ def make_character():
     :postcondition: always create a new character that stores its current coordinates, their health (hp), and their name. 
     :return: a list of length 3 that contains the player coordinates, health, and name
     """
+    time.sleep(1)
     name = input('Welcome to Diabolical: Starter Edition. Please enter your name: ')
     health = 10
     x = 2
     y = 2
     achieved_goal = 0 # the number of enemies killed; kill 5 to win the game
     print(f'\nWelcome, brave', name)
+    time.sleep(2)
     print('\nAn evil presence has emerged in the small town of Wristrum!')
+    time.sleep(2)
     print('Quickly now, enter the catacombs and free the tormented souls of your clansmen.')
     return [x, y, health, name, achieved_goal]
 
@@ -227,6 +231,7 @@ def player_combat_turn(enemy_hp):
   :return: the modified enemy health value as an integer
   """
   player_attack_power = roll_d6()
+  time.sleep(1)
   print("You deal %d damage!" % player_attack_power)
   print("The enemy shrieks menacingly. \n")
   enemy_hp -= player_attack_power
@@ -245,6 +250,7 @@ def enemy_combat_turn(character):
   :return: Prints two strings.
   """
   enemy_attack_power = roll_d6()
+  time.sleep(1)
   print("The enemy slashed you for %d damage!\n" % enemy_attack_power)
   character[2] -= enemy_attack_power
   return character
@@ -265,11 +271,13 @@ def flee_success_calculator(character):
   flee_roll = roll_d10()
 
   if flee_roll > 1:
+    time.sleep(1)
     print("You successfully escape the encounter!")
 
   else:
     flee_damage = roll_d4()
     character[2] -= flee_damage
+    time.sleep(1)
     print("The enemy slices your back as you run away, you take %d damage!" % flee_damage)
     
 
@@ -310,8 +318,7 @@ def initiative_calculator():
 
   Determines if the player or the enemy has initiative. Uses conditional statements to determine who goes first.
 
-  :postcondition: Prints strings and returns booleans based on conditional statements, or else the function
-                  calls itself.
+  :postcondition: Prints strings and returns booleans based on conditional statements, or else the function calls itself.
   :return: Prints strings and returns booleans.
   """
   input("\nPress enter to roll for initiative. \n")
@@ -374,7 +381,7 @@ def combat_round(character):
 
 def main():
     """Drives the program."""
-    print("Hello, Chris!")
+    print("Hello, wanderer.")
 
     game()
 
